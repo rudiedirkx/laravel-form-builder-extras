@@ -1,0 +1,23 @@
+{
+    "name": "rdx/laravel-form-builder-extras",
+    "type": "library",
+    "autoload": {
+        "psr-4": {
+            "rdx\\LfbExtras\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "rdx\\LfbExtras\\LfbExtrasProvider"
+            ]
+        }
+    },
+    "authors": [
+        {
+            "name": "Rudie Dirkx",
+            "email": "github@hotblocks.nl"
+        }
+    ],
+    "require": {}
+}
