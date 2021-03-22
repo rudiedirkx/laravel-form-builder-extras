@@ -19,7 +19,7 @@ class LfbExtrasProvider extends ServiceProvider {
 		$events = $this->app['events'];
 		$form = $this->app['form'];
 
-		$this->app->afterResolving('laravel-form-helper', function(FormHelper $helper) {
+		$this->callAfterResolving('laravel-form-helper', function(FormHelper $helper) {
 			$helper->addCustomField('datalist', Fields\DatalistType::class);
 			$helper->addCustomField('date', Fields\DateType::class);
 			$helper->addCustomField('radios', Fields\RadiosType::class);
