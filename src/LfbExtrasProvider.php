@@ -9,6 +9,7 @@ use Kris\LaravelFormBuilder\Fields\FormField;
 use Kris\LaravelFormBuilder\Fields\InputType;
 use Kris\LaravelFormBuilder\Fields\ParentType;
 use Kris\LaravelFormBuilder\Fields\SelectType;
+use Kris\LaravelFormBuilder\FormHelper;
 
 class LfbExtrasProvider extends ServiceProvider {
 
@@ -17,15 +18,13 @@ class LfbExtrasProvider extends ServiceProvider {
 	public function boot() {
 		$events = $this->app['events'];
 		$form = $this->app['form'];
-		$builder = $this->app['laravel-form-builder'];
-		$helper = $this->app['laravel-form-helper'];
 
-		// $builder->setFormClass(Form::class);
-
-		$helper->addCustomField('datalist', Fields\DatalistType::class);
-		$helper->addCustomField('date', Fields\DateType::class);
-		$helper->addCustomField('radios', Fields\RadiosType::class);
-		$helper->addCustomField('checkboxes', Fields\CheckboxesType::class);
+		$this->app->afterResolving('laravel-form-helper', function(FormHelper $helper) {
+			$helper->addCustomField('datalist', Fields\DatalistType::class);
+			$helper->addCustomField('date', Fields\DateType::class);
+			$helper->addCustomField('radios', Fields\RadiosType::class);
+			$helper->addCustomField('checkboxes', Fields\CheckboxesType::class);
+		});
 
 		$this->loadViewsFrom(__DIR__ . '/../views', 'laravel-form-builder');
 
