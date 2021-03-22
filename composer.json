@@ -13,6 +13,7 @@
             ]
         }
     },
+    "license": "MIT",
     "authors": [
         {
             "name": "Rudie Dirkx",
