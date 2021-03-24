@@ -143,7 +143,7 @@ class LfbExtrasProvider extends ServiceProvider {
 				if (strpos($rule, 'max:') === 0) {
 					return;
 				}
-				if (in_array($rule, ['integer', 'numeric'])) {
+				if (in_array($rule, ['integer', 'numeric', 'file', 'image'])) {
 					return;
 				}
 			}
