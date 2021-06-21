@@ -65,7 +65,7 @@ class LfbExtrasProvider extends ServiceProvider {
 		$events->listen(AfterCollectingFieldRules::class, function(AfterCollectingFieldRules $event) {
 			$this->addOptionValidation($event);
 			$this->addMaxlengthValidation($event);
-			$this->extendFieldDependencies($event);
+			// $this->extendFieldDependencies($event);
 		});
 	}
 
@@ -170,7 +170,7 @@ class LfbExtrasProvider extends ServiceProvider {
 		$rules = $ruler->getFieldRules();
 
 		foreach ($rules as $i => &$rule) {
-			if (is_string($rule) && preg_match('#^(required_with):(.+)$#', $rule, $match)) {
+			if (is_string($rule) && preg_match('#^(required_with(?:out)?):(.+)$#', $rule, $match)) {
 				$rule = $match[1] . ':' . $prefix . $match[2];
 			}
 			unset($rule);
