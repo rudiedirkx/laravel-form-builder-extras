@@ -15,16 +15,18 @@ class LfbExtrasProvider extends ServiceProvider {
 
 	protected $withDataName;
 
-	public function boot() {
-		$events = $this->app['events'];
-		$form = $this->app['form'];
-
+	public function register() {
 		$this->callAfterResolving('laravel-form-helper', function(FormHelper $helper) {
 			$helper->addCustomField('datalist', Fields\DatalistType::class);
 			$helper->addCustomField('date', Fields\DateType::class);
 			$helper->addCustomField('radios', Fields\RadiosType::class);
 			$helper->addCustomField('checkboxes', Fields\CheckboxesType::class);
 		});
+	}
+
+	public function boot() {
+		$events = $this->app['events'];
+		$form = $this->app['form'];
 
 		$this->loadViewsFrom(__DIR__ . '/../views', 'laravel-form-builder');
 
