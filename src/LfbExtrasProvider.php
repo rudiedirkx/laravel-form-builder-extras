@@ -26,37 +26,8 @@ class LfbExtrasProvider extends ServiceProvider {
 
 	public function boot() {
 		$events = $this->app['events'];
-		$form = $this->app['form'];
 
 		$this->loadViewsFrom(__DIR__ . '/../views', 'laravel-form-builder');
-
-		$form->macro('checkboxes', function($name, array $options, array $selected = []) use ($form) {
-			$html = '<div class="options-wrapper">' . "\n";
-			foreach ($options as $value => $label) {
-				$id = "for-$name-$value";
-				$html .= '<div class="form-option">';
-				$html .= $form->checkbox($name . '[]', $value, in_array($value, $selected), ['id' => $id]);
-				$html .= ' ';
-				$html .= $form->label($id, $label);
-				$html .= "</div>\n";
-			}
-			$html .= "</div>\n";
-			return $html;
-		});
-
-		$form->macro('radios', function($name, array $options, $selected = null) use ($form) {
-			$html = '<div class="options-wrapper">' . "\n";
-			foreach ($options as $value => $label) {
-				$id = "for-$name-$value";
-				$html .= '<div class="form-option">';
-				$html .= $form->radio($name, $value, $value == $selected, ['id' => $id]);
-				$html .= ' ';
-				$html .= $form->label($id, $label);
-				$html .= "</div>\n";
-			}
-			$html .= "</div>\n";
-			return $html;
-		});
 
 		$events->listen(AfterFieldCreation::class, function(AfterFieldCreation $event) {
 			$this->addTypeClass($event->getField());

@@ -9,7 +9,16 @@
 <?php endif; ?>
 
 <?php if ($showField): ?>
-	<?php echo Form::radios($name, $options['choices'], $options['selected']) ?>
+	<div class="options-wrapper">
+		<?php foreach ($options['choices'] as $value => $label):
+			$id = "for-$name-$value";
+			?>
+			<div class="form-option">
+				<?php echo Form::radio($name, $value, !is_null($options['selected']) && $value == $options['selected'], ['id' => $id]); ?>
+				<?php echo Form::label($id, $label); ?>
+			</div>
+		<?php endforeach; ?>
+	</div>
 
 	<?php include helpBlockPath(); ?>
 <?php endif; ?>
