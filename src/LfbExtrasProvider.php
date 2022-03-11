@@ -14,6 +14,7 @@ use Kris\LaravelFormBuilder\FormHelper;
 class LfbExtrasProvider extends ServiceProvider {
 
 	protected $withDataName;
+	protected $withExtendFieldDependencies;
 
 	public function register() {
 		$this->callAfterResolving('laravel-form-helper', function(FormHelper $helper) {
@@ -36,16 +37,18 @@ class LfbExtrasProvider extends ServiceProvider {
 		$events->listen(AfterCollectingFieldRules::class, function(AfterCollectingFieldRules $event) {
 			$this->addOptionValidation($event);
 			$this->addMaxlengthValidation($event);
-			// $this->extendFieldDependencies($event);
+			if ($this->withExtendFieldDependencies()) {
+				$this->extendFieldDependencies($event);
+			}
 		});
 	}
 
 	/**
 	 *
 	 */
-	protected function withDataName() {
+	protected function withDataName() : bool {
 		if ($this->withDataName === null) {
-			$this->withDataName = config('laravel-form-builder.with_data_name') ?? false;
+			$this->withDataName = (bool) (config('laravel-form-builder.with_data_name') ?? false);
 		}
 
 		return $this->withDataName;
@@ -54,7 +57,18 @@ class LfbExtrasProvider extends ServiceProvider {
 	/**
 	 *
 	 */
-	protected function addTypeClass(FormField $field) {
+	protected function withExtendFieldDependencies() : bool {
+		if ($this->withExtendFieldDependencies === null) {
+			$this->withExtendFieldDependencies = (bool) (config('laravel-form-builder.with_extend_field_dependencies') ?? false);
+		}
+
+		return $this->withExtendFieldDependencies;
+	}
+
+	/**
+	 *
+	 */
+	protected function addTypeClass(FormField $field) : void {
 		if ($field instanceof ParentType) {
 			$field->setOption('copy_options_to_children', FALSE);
 		}
@@ -75,7 +89,7 @@ class LfbExtrasProvider extends ServiceProvider {
 	/**
 	 *
 	 */
-	protected function addOptionValidation(AfterCollectingFieldRules $event) {
+	protected function addOptionValidation(AfterCollectingFieldRules $event) : void {
 		$field = $event->getField();
 		if ($field instanceof SelectType) {
 			$ruler = $event->getRules();
@@ -102,7 +116,7 @@ class LfbExtrasProvider extends ServiceProvider {
 	/**
 	 *
 	 */
-	protected function addMaxlengthValidation(AfterCollectingFieldRules $event) {
+	protected function addMaxlengthValidation(AfterCollectingFieldRules $event) : void {
 		$field = $event->getField();
 		if ($field instanceof InputType) {
 			$ruler = $event->getRules();
@@ -128,26 +142,29 @@ class LfbExtrasProvider extends ServiceProvider {
 	/**
 	 *
 	 */
-	protected function extendFieldDependencies(AfterCollectingFieldRules $event) {
-		$formHelper = $this->app['laravel-form-helper'];
+	protected function extendFieldDependencies(AfterCollectingFieldRules $event) : void {
+		$form = $event->getField()->getParent();
+		if (!$form->getName()) return;
 
 		$ruler = $event->getRules();
-		$fieldName = $formHelper->transformToDotSyntax($event->getField()->getName());
-		if (strpos($fieldName, '.') === false) {
-			return;
-		}
+		$formHelper = $this->app['laravel-form-helper'];
 
-		$prefix = preg_replace('#\.[^\.]+$#', '.', $fieldName);
+		$formPrefix = $formHelper->transformToDotSyntax($form->getName()) . '.';
+
 		$rules = $ruler->getFieldRules();
 
+		$changed = false;
 		foreach ($rules as $i => &$rule) {
 			if (is_string($rule) && preg_match('#^(required_with(?:out)?):(.+)$#', $rule, $match)) {
-				$rule = $match[1] . ':' . $prefix . $match[2];
+				$rule = $match[1] . ':' . $formPrefix . $match[2];
+				$changed = true;
 			}
 			unset($rule);
 		}
 
-		$ruler->setFieldRules($rules);
+		if ($changed) {
+			$ruler->setFieldRules($rules);
+		}
 	}
 
 }
