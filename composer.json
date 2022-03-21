@@ -20,5 +20,7 @@
             "email": "github@hotblocks.nl"
         }
     ],
-    "require": {}
+    "require": {
+    	"kris/laravel-form-builder": "^1.40"
+    }
 }
