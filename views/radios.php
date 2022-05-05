@@ -13,9 +13,9 @@
 		<?php foreach ($options['choices'] as $value => $label):
 			$id = "for-$name-$value";
 			?>
-			<div class="form-option">
-				<?php echo Form::radio($name, $value, !is_null($options['selected']) && $value == $options['selected'], ['id' => $id]); ?>
-				<?php echo Form::label($id, $label); ?>
+			<div class="form-check">
+				<?php echo Form::radio($name, $value, !is_null($options['selected']) && $value == $options['selected'], ['id' => $id, 'class' => 'form-check-input']); ?>
+				<?php echo Form::label($id, $label, ['class' => 'form-check-label']); ?>
 			</div>
 		<?php endforeach; ?>
 	</div>
