@@ -21,6 +21,6 @@
         }
     ],
     "require": {
-    	"kris/laravel-form-builder": "^1.40"
+        "kris/laravel-form-builder": "^1.40"
     }
 }
