@@ -15,6 +15,12 @@ class CheckboxesType extends SelectType {
 		parent::setValue($value);
 	}
 
+	public function getDefaults() {
+		return parent::getDefaults() + [
+			'item_attributes' => [],
+		];
+	}
+
 	protected function getTemplate() {
 		return 'laravel-form-builder::checkboxes';
 	}
