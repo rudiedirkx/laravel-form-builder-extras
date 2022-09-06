@@ -5,6 +5,8 @@ namespace rdx\LfbExtras;
 use Illuminate\Support\ServiceProvider;
 use Kris\LaravelFormBuilder\Events\AfterCollectingFieldRules;
 use Kris\LaravelFormBuilder\Events\AfterFieldCreation;
+use Kris\LaravelFormBuilder\Fields\ChildFormType;
+use Kris\LaravelFormBuilder\Fields\CollectionType;
 use Kris\LaravelFormBuilder\Fields\FormField;
 use Kris\LaravelFormBuilder\Fields\InputType;
 use Kris\LaravelFormBuilder\Fields\ParentType;
@@ -27,8 +29,13 @@ class LfbExtrasProvider extends ServiceProvider {
 
 	public function boot() {
 		$events = $this->app['events'];
+		$validator = $this->app['validator'];
 
 		$this->loadViewsFrom(__DIR__ . '/../views', 'laravel-form-builder');
+
+		$validator->extend('scalar', function($name, $value, $params) {
+			return $value === null || is_scalar($value);
+		});
 
 		$events->listen(AfterFieldCreation::class, function(AfterFieldCreation $event) {
 			$this->addTypeClass($event->getField());
@@ -36,6 +43,7 @@ class LfbExtrasProvider extends ServiceProvider {
 
 		$events->listen(AfterCollectingFieldRules::class, function(AfterCollectingFieldRules $event) {
 			$this->addOptionValidation($event);
+			$this->addScalarValidation($event);
 			$this->addMaxlengthValidation($event);
 			if ($this->withExtendFieldDependencies()) {
 				$this->extendFieldDependencies($event);
@@ -104,13 +112,43 @@ class LfbExtrasProvider extends ServiceProvider {
 				}
 			}
 
-			if ($field instanceof Fields\CheckboxesType) {
-				$ruler->addFieldRule('array');
-			}
 			$ruler->addFieldRule('in:' . implode(',', $allowed));
 
 			$ruler->append(['attributes' => [$field->getName() => $field->getOption('label')]]);
 		}
+	}
+
+	/**
+	 *
+	 */
+	protected function addScalarValidation(AfterCollectingFieldRules $event) : void {
+		$field = $event->getField();
+		$ruler = $event->getRules();
+		$ruler->addFieldRule($this->acceptsArrayInput($field) ? 'array' : 'scalar');
+	}
+
+	/**
+	 *
+	 */
+	protected function acceptsArrayInput(FormField $field) : bool {
+		if ($field instanceof Fields\CheckboxesType) {
+			return true;
+		}
+		if ($field instanceof CollectionType) {
+			return true;
+		}
+		if ($field instanceof ChildFormType) {
+			return true;
+		}
+
+		if ($field instanceof SelectType) {
+			$attr = $field->getOption('attr');
+			if (isset($attr['multiple'])) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**
