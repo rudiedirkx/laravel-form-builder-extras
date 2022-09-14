@@ -34,7 +34,7 @@ class LfbExtrasProvider extends ServiceProvider {
 		$this->loadViewsFrom(__DIR__ . '/../views', 'laravel-form-builder');
 
 		$validator->extend('scalar', function($name, $value, $params) {
-			return $value === null || is_scalar($value);
+			return !is_array($value);
 		});
 
 		$events->listen(AfterFieldCreation::class, function(AfterFieldCreation $event) {
