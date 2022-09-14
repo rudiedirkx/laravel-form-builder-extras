@@ -124,7 +124,9 @@ class LfbExtrasProvider extends ServiceProvider {
 	protected function addScalarValidation(AfterCollectingFieldRules $event) : void {
 		$field = $event->getField();
 		$ruler = $event->getRules();
-		$ruler->addFieldRule($this->acceptsArrayInput($field) ? 'array' : 'scalar');
+		$rules = $ruler->getFieldRules();
+		array_unshift($rules, $this->acceptsArrayInput($field) ? 'array' : 'scalar');
+		$ruler->setFieldRules($rules);
 	}
 
 	/**
