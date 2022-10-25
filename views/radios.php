@@ -12,11 +12,13 @@
 	<div class="options-wrapper">
 		<?php foreach ($options['choices'] as $value => $label):
 			$id = "for-$name-$value";
-			$attributes = $options['item_attributes'][$value] ?? [];
+			$itemAttributes = $options['item_attributes'][$value] ?? [];
+			$optionAttributes = $options['option_attributes'][$value] ?? [];
+			$labelAttributes = $options['label_attributes'][$value] ?? [];
 			?>
-			<div<?php echo Html::attributes($attributes + ['class' => 'form-option']) ?>>
-				<?php echo Form::radio($name, $value, !is_null($options['selected']) && $value == $options['selected'], ($options['option_attributes'][$value] ?? []) + ['id' => $id]); ?>
-				<?php echo Form::label($id, $label); ?>
+			<div<?php echo Html::attributes($itemAttributes + ['class' => 'form-option']) ?>>
+				<?php echo Form::radio($name, $value, !is_null($options['selected']) && $value == $options['selected'], $optionAttributes + ['id' => $id]); ?>
+				<?php echo Form::label($id, $label, $labelAttributes); ?>
 			</div>
 		<?php endforeach; ?>
 	</div>
