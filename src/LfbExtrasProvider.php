@@ -124,34 +124,41 @@ class LfbExtrasProvider extends ServiceProvider {
 	 */
 	protected function addScalarValidation(AfterCollectingFieldRules $event) : void {
 		$field = $event->getField();
-		$ruler = $event->getRules();
-		$rules = $ruler->getFieldRules();
-		array_unshift($rules, $this->acceptsArrayInput($field) ? 'array' : 'scalar');
-		$ruler->setFieldRules($rules);
+		$rule = $this->requiresInputType($field);
+		if ($rule !== null) {
+			$ruler = $event->getRules();
+			$rules = $ruler->getFieldRules();
+			array_unshift($rules, $rule);
+			$ruler->setFieldRules($rules);
+		}
 	}
 
 	/**
 	 *
 	 */
-	protected function acceptsArrayInput(FormField $field) : bool {
+	protected function requiresInputType(FormField $field) : ?string {
 		if ($field instanceof Fields\CheckboxesType) {
-			return true;
+			return 'array';
 		}
 		if ($field instanceof CollectionType) {
-			return true;
+			return 'array';
 		}
 		if ($field instanceof ChildFormType) {
-			return true;
+			return 'array';
 		}
 
 		if ($field instanceof SelectType) {
 			$attr = $field->getOption('attr');
 			if (isset($attr['multiple'])) {
-				return true;
+				return 'array';
 			}
 		}
 
-		return false;
+		if (!count($field->getAllAttributes())) {
+			return null;
+		}
+
+		return 'scalar';
 	}
 
 	/**
