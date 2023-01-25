@@ -24,6 +24,7 @@ class LfbExtrasProvider extends ServiceProvider {
 			$helper->addCustomField('date', Fields\DateType::class);
 			$helper->addCustomField('radios', Fields\RadiosType::class);
 			$helper->addCustomField('checkboxes', Fields\CheckboxesType::class);
+			$helper->addCustomField('multiselect', Fields\MultiSelectType::class);
 		});
 	}
 
